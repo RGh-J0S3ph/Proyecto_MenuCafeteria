@@ -9,8 +9,8 @@ $exito = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $nombre = $_POST["nombre"] ?? "";
-    $email = $_POST["email"] ?? "";
+    $nombre = trim($_POST["nombre"] ?? "");
+    $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
 
     if ($nombre === "" || $email === "" || $password === "") {
@@ -46,99 +46,83 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?>
 
 <!DOCTYPE html>
-
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
 
     <title>
         Crear usuario
     </title>
+
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+    <div class="auth-shell">
+        <div class="login-container">
 
-    <h1>
-        Crear usuario
-    </h1>
+            <p class="auth-eyebrow">MENÚ CAFETERÍA</p>
+            <h1>Crear usuario</h1>
+            <p class="auth-subtext">Regístrate para acceder al panel</p>
 
-    <?php if ($error !== ""): ?>
+            <?php if ($error !== ""): ?>
+                <div class="alert alert-error">
+                    <span class="alert-marker">!</span>
+                    <span><?php echo htmlspecialchars($error); ?></span>
+                </div>
+            <?php endif; ?>
 
-        <p>
-            <?php echo $error; ?>
-        </p>
+            <?php if ($exito !== ""): ?>
+                <div class="alert alert-success">
+                    <span class="alert-marker">✓</span>
+                    <span><?php echo htmlspecialchars($exito); ?></span>
+                </div>
+            <?php endif; ?>
 
-    <?php endif; ?>
+            <form action="crear_usuario.php" method="POST">
 
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        required
+                    >
+                </div>
 
-    <?php if ($exito !== ""): ?>
+                <div class="form-group">
+                    <label for="email">Correo</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                    >
+                </div>
 
-        <p>
-            <?php echo $exito; ?>
-        </p>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                    >
+                </div>
 
-    <?php endif; ?>
+                <button type="submit" class="btn-primary">
+                    Crear usuario
+                </button>
 
+            </form>
 
-    <form action="crear_usuario.php" method="POST">
+            <div class="auth-footer">
+                <a href="login.php">Regresar al login</a>
+            </div>
 
-        <label for="nombre">
-            Nombre:
-        </label>
-
-        <input
-            type="text"
-            id="nombre"
-            name="nombre"
-            required
-        >
-
-        <br><br>
-
-
-        <label for="email">
-            Correo:
-        </label>
-
-        <input
-            type="email"
-            id="email"
-            name="email"
-            required
-        >
-
-        <br><br>
-
-
-        <label for="password">
-            Contraseña:
-        </label>
-
-        <input
-            type="password"
-            id="password"
-            name="password"
-            required
-        >
-
-        <br><br>
-
-
-        <button type="submit">
-            Crear usuario
-        </button>
-
-    </form>
-
-    <br>
-
-    <a href="login.php">
-        <button>
-        Regresar al login
-    </button> 
-    </a>
-
+        </div>
+    </div>
 </body>
 
 </html>

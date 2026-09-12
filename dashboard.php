@@ -29,23 +29,39 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         Dashboard
     </title>
 
+    <link rel="stylesheet" href="styles.css">
+
 </head>
 
 <body>
 
-    <header>
-        Bienvenido
-    </header>
+    <div class="dashboard">
 
-    <img src="assets/img/kirktriplet.jpg" alt="imagen de bienvenida" class="img-fluid rounded shadow-sm">
+        <div class="dashboard-topbar">
+            <div class="dashboard-brand">MENÚ <strong>CAFETERÍA</strong></div>
 
-    <form action="dashboard.php" method="POST">
+            <form action="dashboard.php" method="POST">
+                <button type="submit" class="btn-ghost">
+                    Cerrar sesión
+                </button>
+            </form>
+        </div>
 
-        <button type="submit">
-            Cerrar sesión
-        </button>
+        <div class="dashboard-main">
 
-    </form>
+            <div class="dashboard-welcome">
+                <p class="dashboard-eyebrow">PANEL PRINCIPAL</p>
+                <h1>Bienvenido, <?php echo htmlspecialchars($_SESSION["usuario_nombre"]); ?></h1>
+                <p>Has iniciado sesión correctamente.</p>
+            </div>
+
+            <div class="dashboard-video">
+                
+            </div>
+
+        </div>
+
+    </div>
 
 </body>
 

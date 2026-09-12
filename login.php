@@ -4,7 +4,7 @@ session_start();
 
 require_once "config/database.php";
 
-$email = $_POST["email"] ?? "";
+$email = trim($_POST["email"] ?? "");
 $password = $_POST["password"] ?? "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -43,51 +43,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Inicio de Sesión</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <h1>Iniciar sesión</h1>
-    <form id="login "action="login.php" method="POST">
-        <label for="email">
-            Correo:
-        </label>
+    <div class="auth-shell">
+        <div class="login-container">
 
-        <input
-            type="email"
-            id="email"
-            name="email"
-            required
-        >
-        <br><br>
-        <label for="password">
-            Contraseña:
-        </label>
-        
-        <input
-            type="password"
-            id="password"
-            name="password"
-            required
-        >
+            <p class="auth-eyebrow">MENÚ CAFETERÍA</p>
+            <h1>Iniciar sesión</h1>
+            <p class="auth-subtext">Ingresa tus datos para continuar</p>
 
-        <br><br>
+            <form id="login" action="login.php" method="POST">
 
-        <button type="submit">
-            Iniciar Sesión
-        </button>
+                <div class="form-group">
+                    <label for="email">Correo</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                    >
+                </div>
 
-        
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                    >
+                </div>
 
-    </form>
+                <button type="submit" class="btn-primary">
+                    Iniciar Sesión
+                </button>
 
-<br>
+            </form>
 
-<a href="crear_usuario.php">
-    <button type="button">
-        Crear usuario
-    </button>
-</a>
+            <div class="auth-footer">
+                ¿No tienes cuenta? <a href="crear_usuario.php">Crear usuario</a>
+            </div>
 
+        </div>
+    </div>
 </body>
 </html>
 
