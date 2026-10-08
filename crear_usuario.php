@@ -1,13 +1,13 @@
 <?php
 
-session_start();
-
+require_once "includes/auth.php";
 require_once "config/database.php";
 
 $error = "";
 $exito = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    validar_csrf();
 
     $nombre = trim($_POST["nombre"] ?? "");
     $email = trim($_POST["email"] ?? "");
@@ -21,8 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO usuarios (nombre, email, password)
-                VALUES (:nombre, :email, :password)";
+        $sql = "INSERT INTO usuarios (nombre, email, password, rol)
+            VALUES (:nombre, :email, :password, 'cliente')";
 
         try {
 
@@ -80,6 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <?php endif; ?>
 
             <form action="crear_usuario.php" method="POST">
+                <input type="hidden" name="csrf_token" value="<?php echo escapar(csrf_token()); ?>">
 
                 <div class="form-group">
                     <label for="nombre">Nombre</label>
