@@ -1,19 +1,14 @@
 <?php
 
-session_start();
+require_once __DIR__ . '/../app/includes/auth.php';
+requerir_login();
 
-if (!isset($_SESSION["usuario_id"])) {
-    header("Location: login.php");
-    exit;
+if (($_SESSION['usuario_rol'] ?? 'cliente') === 'admin') {
+    header('Location: admin/index.php');
+} else {
+    header('Location: tienda/index.php');
 }
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    session_destroy();
-
-    header("Location: login.php");
-    exit;
-}
+exit;
 
 ?>
 
@@ -29,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         Dashboard
     </title>
 
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 
 </head>
 

@@ -1,7 +1,7 @@
 <?php
 
-require_once "includes/auth.php";
-require_once "config/database.php";
+require_once __DIR__ . '/../app/includes/auth.php';
+require_once __DIR__ . '/../app/config/database.php';
 
 $error = "";
 $exito = "";
@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         Crear usuario
     </title>
 
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
 <body>

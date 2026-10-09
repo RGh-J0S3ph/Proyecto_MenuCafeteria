@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../app/includes/auth.php';
+require_once __DIR__ . '/../../app/config/database.php';
 requerir_cliente();
 
 $mensaje = $_SESSION['flash'] ?? '';
@@ -160,7 +160,7 @@ $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tienda | Menú Cafetería</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
     <main class="dashboard">

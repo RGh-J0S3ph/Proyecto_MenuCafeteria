@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../app/includes/auth.php';
+require_once __DIR__ . '/../../app/config/database.php';
 requerir_admin();
 $mensaje = '';
 
@@ -57,20 +57,20 @@ $proveedores = $conexion->query('SELECT id, nombre FROM proveedores WHERE activo
 $productos = $conexion->query('SELECT id, nombre, stock FROM productos ORDER BY nombre')->fetchAll(PDO::FETCH_ASSOC);
 $compras = $conexion->query(
     'SELECT c.id, c.total, c.creado_en, p.nombre AS proveedor, u.nombre AS usuario, '
-    . 'GROUP_CONCAT(CONCAT(pr.nombre, " × ", dc.cantidad) SEPARATOR ", ") AS articulos '
+    . 'pr.nombre AS articulo, dc.cantidad '
     . 'FROM compras c JOIN proveedores p ON p.id = c.proveedor_id JOIN usuarios u ON u.id = c.usuario_id '
     . 'JOIN detalle_compra dc ON dc.compra_id = c.id JOIN productos pr ON pr.id = dc.producto_id '
-    . 'GROUP BY c.id ORDER BY c.creado_en DESC LIMIT 50'
+    . 'ORDER BY c.creado_en DESC LIMIT 50'
 )->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Compras | Administración</title><link rel="stylesheet" href="../styles.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Compras | Administración</title><link rel="stylesheet" href="../assets/css/styles.css"></head>
 <body><main class="dashboard"><div class="dashboard-topbar"><div class="dashboard-brand">MENÚ <strong>CAFETERÍA</strong> / COMPRAS</div><a class="btn-ghost" href="index.php">Administración</a></div>
 <section class="dashboard-main store-main"><p class="dashboard-eyebrow">ABASTECIMIENTO</p><h1>Proveedores y compras</h1>
 <?php if ($mensaje !== ''): ?><div class="alert alert-success"><?php echo escapar($mensaje); ?></div><?php endif; ?>
 <div class="admin-columns"><section class="store-section"><h2>Nuevo proveedor</h2><form method="POST" class="admin-form"><input type="hidden" name="csrf_token" value="<?php echo escapar(csrf_token()); ?>"><input type="hidden" name="accion" value="proveedor"><label>Nombre<input name="nombre" maxlength="150" required></label><label>Contacto<input name="contacto" maxlength="150"></label><button class="btn-primary" type="submit">Guardar proveedor</button></form></section>
 <section class="store-section"><h2>Recibir compra</h2><?php if (!$proveedores || !$productos): ?><p>Primero registra al menos un proveedor y un producto.</p><?php else: ?><form method="POST" class="admin-form"><input type="hidden" name="csrf_token" value="<?php echo escapar(csrf_token()); ?>"><input type="hidden" name="accion" value="compra"><label>Proveedor<select name="proveedor_id" required><?php foreach ($proveedores as $proveedor): ?><option value="<?php echo (int) $proveedor['id']; ?>"><?php echo escapar($proveedor['nombre']); ?></option><?php endforeach; ?></select></label><label>Producto<select name="producto_id" required><?php foreach ($productos as $producto): ?><option value="<?php echo (int) $producto['id']; ?>"><?php echo escapar($producto['nombre']); ?> (stock: <?php echo escapar($producto['stock']); ?>)</option><?php endforeach; ?></select></label><label>Cantidad<input type="number" name="cantidad" min="0.01" step="0.01" required></label><label>Costo unitario<input type="number" name="costo_unitario" min="0" step="0.01" required></label><button class="btn-primary" type="submit">Registrar y recibir</button></form><?php endif; ?></section></div>
-<section class="store-section"><h2>Compras recientes</h2><div class="table-wrap"><table><thead><tr><th>Compra</th><th>Fecha</th><th>Proveedor</th><th>Artículos</th><th>Total</th><th>Registró</th></tr></thead><tbody><?php foreach ($compras as $compra): ?><tr><td>#<?php echo (int) $compra['id']; ?></td><td><?php echo escapar($compra['creado_en']); ?></td><td><?php echo escapar($compra['proveedor']); ?></td><td><?php echo escapar($compra['articulos']); ?></td><td>$<?php echo number_format((float) $compra['total'], 2); ?></td><td><?php echo escapar($compra['usuario']); ?></td></tr><?php endforeach; ?></tbody></table></div></section>
+<section class="store-section"><h2>Compras recientes</h2><div class="table-wrap"><table><thead><tr><th>Compra</th><th>Fecha</th><th>Proveedor</th><th>Artículo</th><th>Cantidad</th><th>Total</th><th>Registró</th></tr></thead><tbody><?php foreach ($compras as $compra): ?><tr><td>#<?php echo (int) $compra['id']; ?></td><td><?php echo escapar($compra['creado_en']); ?></td><td><?php echo escapar($compra['proveedor']); ?></td><td><?php echo escapar($compra['articulo']); ?></td><td><?php echo escapar($compra['cantidad']); ?></td><td>$<?php echo number_format((float) $compra['total'], 2); ?></td><td><?php echo escapar($compra['usuario']); ?></td></tr><?php endforeach; ?></tbody></table></div></section>
 </section></main></body></html>

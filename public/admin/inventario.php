@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../app/includes/auth.php';
+require_once __DIR__ . '/../../app/config/database.php';
 requerir_admin();
 $mensaje = '';
 
@@ -53,7 +53,7 @@ $movimientos = $conexion->query(
 ?>
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Inventario | Administración</title><link rel="stylesheet" href="../styles.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Inventario | Administración</title><link rel="stylesheet" href="../assets/css/styles.css"></head>
 <body><main class="dashboard"><div class="dashboard-topbar"><div class="dashboard-brand">MENÚ <strong>CAFETERÍA</strong> / INVENTARIO</div><a class="btn-ghost" href="index.php">Administración</a></div>
 <section class="dashboard-main store-main"><p class="dashboard-eyebrow">EXISTENCIAS</p><h1>Ajustes de inventario</h1><?php if ($mensaje !== ''): ?><div class="alert alert-success"><?php echo escapar($mensaje); ?></div><?php endif; ?>
 <section class="store-section"><h2>Registrar ajuste manual</h2><form method="POST" class="admin-form admin-form-grid"><input type="hidden" name="csrf_token" value="<?php echo escapar(csrf_token()); ?>"><label>Producto<select name="producto_id" required><?php foreach ($productos as $producto): ?><option value="<?php echo (int) $producto['id']; ?>"><?php echo escapar($producto['nombre']); ?> (stock: <?php echo escapar($producto['stock']); ?>)</option><?php endforeach; ?></select></label><label>Cantidad (+ entrada, - salida)<input type="number" name="cantidad" step="0.01" required></label><label class="admin-wide">Motivo<input name="motivo" maxlength="150" required></label><button class="btn-primary" type="submit">Aplicar ajuste</button></form></section>

@@ -1,7 +1,8 @@
 -- Ejecutar una sola vez sobre la base proyecto_php.
 -- Las cuentas existentes quedan como clientes. Promover administradores manualmente.
 ALTER TABLE usuarios
-    ADD COLUMN rol ENUM('cliente', 'admin') NOT NULL DEFAULT 'cliente';
+    ADD COLUMN rol ENUM('cliente', 'admin') NOT NULL DEFAULT 'cliente',
+    ADD COLUMN activo TINYINT(1) NOT NULL DEFAULT 1;
 
 CREATE TABLE IF NOT EXISTS categorias (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -32,7 +33,7 @@ CREATE TABLE IF NOT EXISTS proveedores (
 CREATE TABLE IF NOT EXISTS pedidos (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
-    estado ENUM('pendiente', 'cancelado') NOT NULL DEFAULT 'pendiente',
+    estado ENUM('pendiente', 'completado', 'cancelado') NOT NULL DEFAULT 'pendiente',
     total DECIMAL(10,2) NOT NULL,
     creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_pedidos_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id),

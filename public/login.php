@@ -2,14 +2,14 @@
 
 session_start();
 
-require_once "config/database.php";
+require_once __DIR__ . '/../app/config/database.php';
 
 $email = trim($_POST["email"] ?? "");
 $password = $_POST["password"] ?? "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $sql = "SELECT * FROM usuarios WHERE email = :email";
+    $sql = "SELECT * FROM usuarios WHERE email = :email AND activo = 1";
 
     $stmt = $conexion->prepare($sql);
 
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Inicio de Sesión</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
 <body>

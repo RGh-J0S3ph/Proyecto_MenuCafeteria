@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../app/includes/auth.php';
+require_once __DIR__ . '/../../app/config/database.php';
 requerir_admin();
 $mensaje = '';
 
@@ -99,7 +99,7 @@ $productos = $conexion->query(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Productos | Administración</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
 <main class="dashboard">

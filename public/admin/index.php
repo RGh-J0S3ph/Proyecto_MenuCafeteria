@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../../app/includes/auth.php';
 requerir_admin();
 
 ?>
@@ -10,7 +10,7 @@ requerir_admin();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Administración | Menú Cafetería</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
     <main class="dashboard">
@@ -29,6 +29,7 @@ requerir_admin();
             </div>
             <nav class="admin-links">
                 <a class="btn-primary" href="productos.php">Productos y categorías</a>
+                <a class="btn-primary" href="usuarios.php">Cuentas de clientes</a>
                 <a class="btn-primary" href="pedidos.php">Pedidos de clientes</a>
                 <a class="btn-primary" href="compras.php">Proveedores y compras</a>
                 <a class="btn-primary" href="inventario.php">Ajustes de inventario</a>

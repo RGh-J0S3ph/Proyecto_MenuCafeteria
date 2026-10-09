@@ -1,6 +1,6 @@
 <?php
 // Script temporal de diagnóstico. BORRAR después de usarlo.
-require_once "config/database.php";
+require_once __DIR__ . '/../app/config/database.php';
 
 echo "<pre>";
 
