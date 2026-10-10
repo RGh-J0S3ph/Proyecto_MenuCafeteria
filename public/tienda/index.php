@@ -125,11 +125,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$productos = $conexion->query(
-    'SELECT p.id, p.nombre, p.descripcion, p.precio, p.stock, c.nombre AS categoria '
-    . 'FROM productos p LEFT JOIN categorias c ON c.id = p.categoria_id '
-    . 'WHERE p.activo = 1 ORDER BY c.nombre, p.nombre'
-)->fetchAll(PDO::FETCH_ASSOC);
+$tipoMenu = $_GET['tipo'] ?? '';
+if (!in_array($tipoMenu, ['', 'bebida', 'refrigerio'], true)) {
+    $tipoMenu = '';
+}
+$busquedaMenu = isset($_GET['q']) && is_string($_GET['q']) ? trim(substr($_GET['q'], 0, 100)) : '';
+$consultaMenu =
+    'SELECT p.id, p.nombre, p.descripcion, p.precio, p.stock, p.tipo, c.nombre AS categoria '
+    . 'FROM productos p LEFT JOIN categorias c ON c.id = p.categoria_id WHERE p.activo = 1';
+$parametrosMenu = [];
+if ($tipoMenu !== '') {
+    $consultaMenu .= ' AND p.tipo = :tipo';
+    $parametrosMenu['tipo'] = $tipoMenu;
+}
+if ($busquedaMenu !== '') {
+    $consultaMenu .= ' AND (p.nombre LIKE :nombre OR p.descripcion LIKE :descripcion)';
+    $parametrosMenu['nombre'] = '%' . $busquedaMenu . '%';
+    $parametrosMenu['descripcion'] = '%' . $busquedaMenu . '%';
+}
+$consultaMenu .= ' ORDER BY c.nombre, p.nombre';
+$stmt = $conexion->prepare($consultaMenu);
+$stmt->execute($parametrosMenu);
+$productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $productosCarrito = [];
 $totalCarritoCentavos = 0;
@@ -177,7 +194,7 @@ $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <section class="dashboard-main store-main">
             <div class="dashboard-welcome">
                 <p class="dashboard-eyebrow">TIENDA</p>
-                <h1>Catálogo de cafetería</h1>
+                    <h1>Menú de bebidas y refrigerios</h1>
                 <p>Hola, <?php echo escapar($_SESSION['usuario_nombre'] ?? ''); ?>.</p>
             </div>
 
@@ -186,14 +203,28 @@ $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
 
             <section id="catalogo" class="store-section">
-                <h2>Productos</h2>
+                <h2>Menú</h2>
+                <form method="GET" action="index.php#catalogo" class="menu-filters">
+                    <label for="busqueda-menu">Buscar producto
+                        <input id="busqueda-menu" type="search" name="q" maxlength="100" value="<?php echo escapar($busquedaMenu); ?>" placeholder="Nombre o descripción">
+                    </label>
+                    <label for="tipo-menu">Tipo
+                        <select id="tipo-menu" name="tipo">
+                            <option value="">Todos</option>
+                            <option value="bebida" <?php echo $tipoMenu === 'bebida' ? 'selected' : ''; ?>>Bebidas</option>
+                            <option value="refrigerio" <?php echo $tipoMenu === 'refrigerio' ? 'selected' : ''; ?>>Refrigerios</option>
+                        </select>
+                    </label>
+                    <button type="submit" class="btn-primary">Buscar</button>
+                    <?php if ($tipoMenu !== '' || $busquedaMenu !== ''): ?><a class="btn-ghost" href="index.php#catalogo">Limpiar</a><?php endif; ?>
+                </form>
                 <?php if (!$productos): ?>
-                    <p>Aún no hay productos disponibles.</p>
+                    <p><?php echo $tipoMenu !== '' || $busquedaMenu !== '' ? 'No hay productos que coincidan con la búsqueda.' : 'Aún no hay productos disponibles.'; ?></p>
                 <?php else: ?>
                     <div class="store-grid">
                         <?php foreach ($productos as $producto): ?>
                             <article class="store-item">
-                                <p class="dashboard-eyebrow"><?php echo escapar($producto['categoria'] ?? 'CAFETERÍA'); ?></p>
+                                <p class="dashboard-eyebrow"><?php echo $producto['tipo'] === 'bebida' ? 'BEBIDA' : 'REFRIGERIO'; ?> · <?php echo escapar($producto['categoria'] ?? 'CAFETERÍA'); ?></p>
                                 <h3><?php echo escapar($producto['nombre']); ?></h3>
                                 <p><?php echo escapar($producto['descripcion'] ?? ''); ?></p>
                                 <p class="store-price">$<?php echo number_format((float) $producto['precio'], 2); ?></p>

@@ -434,6 +434,32 @@ button[type="submit"]:active,
     font-size: 20px;
 }
 
+.menu-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.menu-filters label {
+    display: grid;
+    gap: 7px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.menu-filters input,
+.menu-filters select {
+    width: 100%;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font: inherit;
+}
+
 .store-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
@@ -616,3 +642,4 @@ button[type="submit"]:active,
         grid-column: auto;
     }
 }
+

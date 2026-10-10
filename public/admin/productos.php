@@ -21,23 +21,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($accion === 'producto') {
             $id = filter_input(INPUT_POST, 'producto_id', FILTER_VALIDATE_INT) ?: null;
             $categoriaId = filter_input(INPUT_POST, 'categoria_id', FILTER_VALIDATE_INT) ?: null;
+            $tipo = $_POST['tipo'] ?? '';
             $nombre = trim($_POST['nombre'] ?? '');
             $descripcion = trim($_POST['descripcion'] ?? '');
             $precio = filter_var($_POST['precio'] ?? null, FILTER_VALIDATE_FLOAT);
             $activo = isset($_POST['activo']) ? 1 : 0;
             $stockInicial = filter_var($_POST['stock_inicial'] ?? '0', FILTER_VALIDATE_FLOAT);
 
-            if ($nombre === '' || $precio === false || $precio <= 0 || (!$id && ($stockInicial === false || $stockInicial < 0))) {
-                throw new RuntimeException('Revisa el nombre, precio y stock inicial.');
+            if (!in_array($tipo, ['bebida', 'refrigerio'], true) || $nombre === '' || $precio === false || $precio <= 0 || (!$id && ($stockInicial === false || $stockInicial < 0))) {
+                throw new RuntimeException('Revisa el tipo, nombre, precio y stock inicial.');
             }
 
             if ($id) {
                 $stmt = $conexion->prepare(
-                    'UPDATE productos SET categoria_id = :categoria_id, nombre = :nombre, '
+                    'UPDATE productos SET categoria_id = :categoria_id, tipo = :tipo, nombre = :nombre, '
                     . 'descripcion = :descripcion, precio = :precio, activo = :activo WHERE id = :id'
                 );
                 $stmt->execute([
                     'categoria_id' => $categoriaId,
+                    'tipo' => $tipo,
                     'nombre' => $nombre,
                     'descripcion' => $descripcion !== '' ? $descripcion : null,
                     'precio' => number_format($precio, 2, '.', ''),
@@ -48,11 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $conexion->beginTransaction();
                 $stmt = $conexion->prepare(
-                    'INSERT INTO productos (categoria_id, nombre, descripcion, precio, stock, activo) '
-                    . 'VALUES (:categoria_id, :nombre, :descripcion, :precio, :stock, 1)'
+                    'INSERT INTO productos (categoria_id, tipo, nombre, descripcion, precio, stock, activo) '
+                    . 'VALUES (:categoria_id, :tipo, :nombre, :descripcion, :precio, :stock, 1)'
                 );
                 $stmt->execute([
                     'categoria_id' => $categoriaId,
+                    'tipo' => $tipo,
                     'nombre' => $nombre,
                     'descripcion' => $descripcion !== '' ? $descripcion : null,
                     'precio' => number_format($precio, 2, '.', ''),
@@ -120,6 +123,7 @@ $productos = $conexion->query(
             <form method="POST" class="admin-form admin-form-grid">
                 <input type="hidden" name="csrf_token" value="<?php echo escapar(csrf_token()); ?>"><input type="hidden" name="accion" value="producto">
                 <label>Nombre<input name="nombre" maxlength="150" required></label>
+                <label>Tipo<select name="tipo" required><option value="bebida">Bebida</option><option value="refrigerio">Refrigerio</option></select></label>
                 <label>Categoría<select name="categoria_id"><option value="">Sin categoría</option><?php foreach ($categorias as $categoria): ?><option value="<?php echo (int) $categoria['id']; ?>"><?php echo escapar($categoria['nombre']); ?></option><?php endforeach; ?></select></label>
                 <label>Precio<input type="number" name="precio" min="0.01" step="0.01" required></label>
                 <label>Existencia inicial<input type="number" name="stock_inicial" min="0" step="0.01" value="0" required></label>
@@ -127,17 +131,18 @@ $productos = $conexion->query(
                 <button class="btn-primary" type="submit">Crear producto</button>
             </form>
         </section>
-        <section class="store-section"><h2>Inventario de productos</h2>
-            <div class="table-wrap"><table><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Editar</th></tr></thead><tbody>
+        <section class="store-section"><h2>Inventario de bebidas y refrigerios</h2>
+            <div class="table-wrap"><table><thead><tr><th>Producto</th><th>Tipo</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Editar</th></tr></thead><tbody>
             <?php foreach ($productos as $producto): ?>
                 <tr>
-                    <td><?php echo escapar($producto['nombre']); ?></td><td><?php echo escapar($producto['categoria'] ?? 'Sin categoría'); ?></td>
+                    <td><?php echo escapar($producto['nombre']); ?></td><td><?php echo $producto['tipo'] === 'bebida' ? 'Bebida' : 'Refrigerio'; ?></td><td><?php echo escapar($producto['categoria'] ?? 'Sin categoría'); ?></td>
                     <td>$<?php echo number_format((float) $producto['precio'], 2); ?></td><td><?php echo escapar($producto['stock']); ?></td><td><?php echo $producto['activo'] ? 'Activo' : 'Inactivo'; ?></td>
                     <td>
                         <details><summary>Editar</summary>
                             <form method="POST" class="admin-form">
                                 <input type="hidden" name="csrf_token" value="<?php echo escapar(csrf_token()); ?>"><input type="hidden" name="accion" value="producto"><input type="hidden" name="producto_id" value="<?php echo (int) $producto['id']; ?>">
                                 <label>Nombre<input name="nombre" value="<?php echo escapar($producto['nombre']); ?>" required></label>
+                                <label>Tipo<select name="tipo" required><option value="bebida" <?php echo $producto['tipo'] === 'bebida' ? 'selected' : ''; ?>>Bebida</option><option value="refrigerio" <?php echo $producto['tipo'] === 'refrigerio' ? 'selected' : ''; ?>>Refrigerio</option></select></label>
                                 <label>Categoría<select name="categoria_id"><option value="">Sin categoría</option><?php foreach ($categorias as $categoria): ?><option value="<?php echo (int) $categoria['id']; ?>" <?php echo (int) $producto['categoria_id'] === (int) $categoria['id'] ? 'selected' : ''; ?>><?php echo escapar($categoria['nombre']); ?></option><?php endforeach; ?></select></label>
                                 <label>Precio<input type="number" name="precio" min="0.01" step="0.01" value="<?php echo escapar($producto['precio']); ?>" required></label>
                                 <label>Descripción<textarea name="descripcion" rows="2"><?php echo escapar($producto['descripcion'] ?? ''); ?></textarea></label>
